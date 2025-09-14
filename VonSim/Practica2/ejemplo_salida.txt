@@ -1,0 +1,19 @@
+ORG 1000H
+PB EQU 31H
+CB EQU 33H
+
+;prender todas las luces (salida)   
+
+ORG 2000H
+;PARA LAS LUCES (salida)
+;configuro todos los bits de CB para que en el puerto de datos PB sean de salida
+mov al, 00000000b
+out CB, al
+
+mov al, 11111111b; prendo todas las luces
+out PB, al
+
+;PARA LAS LLAVES (entrada)
+
+INT 0
+END

@@ -1,0 +1,23 @@
+      ORG 1000H
+      PA EQU 30H
+      PB EQU 31H
+      CA EQU 32H
+      CB EQU 33H
+      
+      ;prender todas las luces (salida)   
+
+      ORG 2000H
+      ;configuro PA de entrada y PB de salida (a traves de CA y CB)
+      mov al, 11111111b
+      out CA, al
+      mov al, 00000000b
+      out CB, al
+
+      ;leemos PA (el estado de las llaves)
+LOOP: in al, PA
+      ;escribimos en PB (el puerto de las llaves)
+      out PB, al
+      JMP LOOP
+
+      INT 0
+      END
