@@ -20,17 +20,19 @@ in al, PA
 and al, 00000001b
 out PA, al
 
+;cargo en bx y cl l direccion y la longitud de lo que voy a imprimir
 mov bx, offset cadena
 mov cl, offset fin_cadena - offset cadena
 
-poll: in al, PA
+poll: in al, PA ;leo el estado de la impresora
       TEST al, 1 ;o and al, 0000_0001b para quedarme solo con el bit de busy
-      jnz poll
+      jnz poll  ;mientras busy no sea 0 (o sea, es 1), salta y espera
 
       ;mando el proximo caracter
       mov al, [bx]
       OUT PB, AL
-      
+
+      ;PULSO DE STROBE
       ; Strobe a 1
       IN AL, PA
       OR AL, 02H
