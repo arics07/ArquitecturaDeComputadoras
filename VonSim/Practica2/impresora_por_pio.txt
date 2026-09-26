@@ -1,0 +1,49 @@
+PA EQU 30h
+PB EQU 31h
+CA EQU 32h
+CB EQU 33h
+
+ORG 1000h
+cadena db "hola a todos!"
+fin_cadena db ?
+
+ORG 2000h
+;inicializo el pio
+mov al, 1111_1101b
+out CA, al
+
+mov al, 0
+out CB, al
+
+;pongo el strobe en 0
+in al, PA
+and al, 00000001b
+out PA, al
+
+mov bx, offset cadena
+mov cl, offset fin_cadena - offset cadena
+
+poll: in al, PA
+      TEST al, 1 ;o and al, 0000_0001b para quedarme solo con el bit de busy
+      jnz poll
+
+      ;mando el proximo caracter
+      mov al, [bx]
+      OUT PB, AL
+      
+      ; Strobe a 1
+      IN AL, PA
+      OR AL, 02H
+      OUT PA, AL
+      ; Strobe a 0
+      IN AL, PA
+      AND AL, 0FDH ;o 0h
+      OUT PA, AL
+      
+      ;avanzo en la cadena al proximo caracter
+      INC BX
+      DEC CL
+      JNZ poll  ;mientras cl no sea 0, salta
+
+int 0
+end

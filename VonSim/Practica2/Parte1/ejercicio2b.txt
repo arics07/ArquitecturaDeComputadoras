@@ -19,7 +19,7 @@
           out CA, al
     
           in al, PA
-          TEST al, 10000000b
+          TEST al, 10000000b  (and + cmp 0)
           jz PRENDIDA
           mov bx, offset OFF
           mov al, offset FINAL_MENSAJE - offset OFF
