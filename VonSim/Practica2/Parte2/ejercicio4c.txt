@@ -1,0 +1,64 @@
+;c) Imprimir mensaje leído Escribir un programa que solicita el ingreso de cinco caracteres por teclado y
+;los envía de a uno por vez a la impresora a través de la PIO a medida que se van ingresando. No es
+;necesario mostrar los caracteres en la pantalla. Utilizar la subrutina imprimir_caracter del inciso
+;anterior.
+
+PA EQU 30h 
+PB EQU 31h 
+CA EQU 32h 
+CB EQU 33h 
+
+org 3000h
+ini_pio: push ax
+         mov al, 0FDh
+         out CA, al
+         mov al, 0
+         out CB, al
+         pop ax
+         ret
+
+org 3100h
+poll: push ax
+      in al, PA
+      AND al, 1
+      pop ax
+      jnz poll
+      ret
+
+org 3200h
+flanco_ascendente: push ax
+
+                   mov al, 0000_0010b
+                   out PA, AL
+
+                   mov al, 0
+                   out PA, al
+
+                   pop ax
+                   ret
+
+
+org 3300h
+imprimir_caracter: push ax
+                   call poll
+                   out PB, al
+                   call flanco_ascendente
+                   pop ax
+                   ret
+
+org 1000h 
+char db ?
+
+org 2000h 
+call ini_pio
+mov cl, 5
+mov bx, offset char
+imprimir_msj:   INT 6
+                mov al, [bx]
+                call imprimir_caracter
+                dec cl
+                jnz imprimir_msj
+
+int 0
+end
+              

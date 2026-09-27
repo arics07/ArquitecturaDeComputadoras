@@ -1,0 +1,64 @@
+;Imprimir mensaje fijo Escribir un programa para imprimir el mensaje “ORGANIZACION Y
+;ARQUITECTURA DE COMPUTADORAS” utilizando la impresora a través de la PIO. Utilizar la
+;subrutina imprimir_caracter del inciso anterior.
+
+PA EQU 30h 
+PB EQU 31h 
+CA EQU 32h 
+CB EQU 33h 
+
+org 1000h 
+msj db "ORGANIZACION Y ARQUITECTURA DE COMPUTADORAS"
+fin_msj db ?
+
+org 3000h
+ini_pio: push ax
+         mov al, 0FDh
+         out CA, al
+         mov al, 0
+         out CB, al
+         pop ax
+         ret
+
+org 3100h
+poll: push ax
+      in al, PA
+      AND al, 1
+      pop ax
+      jnz poll
+      ret
+
+org 3200h
+flanco_ascendente: push ax
+
+                   mov al, 0000_0010b
+                   out PA, AL
+
+                   mov al, 0
+                   out PA, al
+
+                   pop ax
+                   ret
+
+
+org 3300h
+imprimir_caracter: push ax
+                   call poll
+                   out PB, al
+                   call flanco_ascendente
+                   pop ax
+                   ret
+
+
+org 2000h 
+call ini_pio
+mov bx, offset msj
+mov cl, offset fin_msj - offset msj
+imprimir_cadena: mov al, [bx]
+                 call imprimir_caracter
+                 inc bx
+                 dec cl
+                 jnz imprimir_cadena
+
+int 0 
+end

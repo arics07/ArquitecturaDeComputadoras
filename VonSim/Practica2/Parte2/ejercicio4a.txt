@@ -1,0 +1,68 @@
+;a) Imprimir letra fija Escribir un programa para imprimir la letra “A” utilizando la impresora a través de
+;la PIO. Recordar que el programa deberá esperar hasta que el bit de busy esté apagado, luego enviar el
+;carácter, y luego enviar el flanco ascendente a través de la señal de strobe. Modularizar el programa en
+;4 subrutinas:
+;📄 ini_pio: Inicializa el PIO configurando los registros CA y CB según corresponde a strobe, busy y
+;puerto de datos
+;📄 poll: Consulta el bit busy de la impresora, e itera hasta esté en 0. Cuando está en 0 la subrutina
+;retorna sin devolver ninǵun valor
+;📄 flanco_ascendente: Igual que la subrutina implementada en el ejercicio anterior (envía el flanco ascendente (un 0 y luego
+;un 1) a través del strobe.)
+;📄 imprimir_caracter: Recibe un carácter a imprimir en AL, y utilizando poll y flanco_ascendente,
+;realiza todos los pasos necesarios para enviar a la impresora el carácter.
+
+PA EQU 30h
+PB EQU 31h
+CA EQU 32h
+CB EQU 33h
+
+org 1000h
+letra db 'A'
+
+org 3000h
+ini_pio: push ax
+         mov al, 0FDh
+         out CA, al
+         mov al, 0
+         out CB, al
+         pop ax
+         ret
+
+org 3100h
+poll: push ax
+      in al, PA
+      AND al, 1
+      jnz poll
+      pop ax
+      ret
+
+org 3200h
+flanco_ascendente: push ax
+
+                   mov al, 0000_0010b
+                   out PA, AL
+
+                   mov al, 0
+                   out PA, al
+
+                   pop ax
+                   ret
+
+
+org 3300h
+imprimir_caracter: push ax
+                   call poll
+                   
+                   out PB, al
+                   call flanco_ascendente
+                   pop ax
+                   ret
+
+
+
+org 2000h 
+call ini_pio
+mov al, 'A'
+call imprimir_caracter
+int 0
+end
