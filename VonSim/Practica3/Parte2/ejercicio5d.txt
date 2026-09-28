@@ -1,0 +1,65 @@
+;d) Desafío: Modificar a) para que el primer 
+;mensaje se imprima luego de 1 segundo, el 
+;segundo luego de 2 segundos, el tercero luego 
+;de 3, y así sucesivamente, hasta que se espere 
+;255 en el último mensaje, y el programa termine.
+
+EOI EQU 20h 
+IMR EQU 21h 
+INT1 EQU 25h 
+
+CONT EQU 10h
+COMP EQU 11h
+
+N_TIMER EQU 15
+
+org 60
+dw RUT_TIMER ;la direccion de la rutina que atiende la interrupción
+
+org 1000h 
+msj db "Vamos las interrupciones!"
+fin_msj db ?
+termina db 255
+
+org 3000h
+RUT_TIMER: push ax
+           INT 7
+           mov al, 0
+           out CONT, al
+           in al, COMP
+           inc al
+           out COMP, al
+           dec termina
+           mov al, EOI
+           out EOI, al
+           pop ax
+           iret
+         
+org 2000h
+CLI
+
+mov al, 1111_1101b ;habilito interrupciones F10
+out IMR, al
+
+mov al, N_TIMER
+out INT1, al
+
+mov al, 0
+out CONT, al
+
+mov al, 1
+out COMP, al
+
+mov bx, offset msj
+mov al, offset fin_msj - offset msj
+
+STI
+
+loop: cmp termina, 0
+      jnz loop
+
+mov al, 1111_1111b
+out IMR, al
+
+int 0
+end

@@ -1,0 +1,43 @@
+;A) Escribir un programa que muestre en pantalla 
+;“Vamos las interrupciones!” cada vez que se presiona la
+;tecla F10. El programa nunca termina.
+
+EOI EQU 20h 
+IMR EQU 21h 
+INT0 EQU 24h 
+
+N_F10 EQU 15
+
+org 60
+dw RUT_F10 ;la direccion de la rutina que atiende la interrupción
+
+org 1000h 
+msj db "Vamos las interrupciones!"
+fin_msj db ?
+
+org 3000h
+RUT_F10: push ax
+         INT 7
+         mov al, EOI
+         out EOI, al
+         pop ax
+         iret
+         
+org 2000h
+CLI
+
+mov al, 1111_1110b ;habilito interrupciones F10
+out IMR, al
+
+mov al, N_F10
+out INT0, al
+
+mov bx, offset msj
+mov al, offset fin_msj - offset msj
+
+STI
+
+loop: jmp loop
+      
+int 0
+end

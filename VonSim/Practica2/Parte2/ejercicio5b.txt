@@ -1,0 +1,2 @@
+Con PIO mediante polling, el procesador está ocupado consultando continuamente el estado de la impresora.
+El HAND-SHAKE permite una comunicación más coordinada, porque el dispositivo puede indicar cuándo está listo para recibir o cuándo terminó de procesar el dato.

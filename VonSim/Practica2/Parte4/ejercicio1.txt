@@ -5,3 +5,28 @@
 ;ROTAR_DER_N, que le permitirán rotar el bit de estado de las luces y generar el juego
 ;correspondiente.
 
+PA EQU 30h 
+PB EQU 31h 
+CA EQU 32h 
+CB EQU 33h
+
+org 3000h 
+ini_pio: push ax
+
+         mov al, 1111_1111b
+         out CA, al
+
+         mov al, 0
+         out CB, al
+
+         pop ax
+         ret 
+
+org 3100h 
+ROTAR_IZQ: 
+
+org 3200h
+ROTAR_DER_N: 
+
+org 2000h 
+call ini_pio
