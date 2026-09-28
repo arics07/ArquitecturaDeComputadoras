@@ -1,0 +1,87 @@
+;Conteo regresivo ⭐⭐: Escribir un programa que 
+;implemente un conteo regresivo a partir de un valor
+;(de 1 a 9) ingresado desde el teclado. 
+;El conteo debe comenzar al presionarse la tecla F10. 
+;El tiempo transcurrido debe mostrarse en pantalla, 
+;actualizándose el valor cada segundo. Por ejemplo, 
+;si se ingresa el valor 7, cuando se apreta F10 debe 
+;mostrarse en pantalla “7 6 5 4 3 2 1 0” en los 
+;7 segundos siguientes.
+
+;TODAVÍA NO FUNCIONA 
+
+EOI EQU 20h 
+IMR EQU 21h 
+INT0 EQU 24h
+INT1 EQU 25h 
+
+CONT EQU 10h
+COMP EQU 11h
+
+N_F10 EQU 20
+N_TIMER EQU 15
+
+org 60
+dw RUT_TIMER ;la direccion de la rutina que atiende la interrupción
+
+org 80
+dw RUT_F10
+
+org 1000h 
+NUMERO db 0
+FIN_NUMERO db ?
+
+org 3000h
+RUT_TIMER: push ax
+
+           mov al, 0
+           out CONT, al
+           
+           mov al, EOI
+           out EOI, al  ;avisa al PIC que terminó la interrupción
+           
+           pop ax
+           iret
+      
+org 3500h
+RUT_F10: INT 7
+         dec NUMERO
+         mov al, EOI
+         out EOI, al
+         
+         iret
+
+org 2000h
+CLI
+
+mov al, 1111_1100b ;habilito interrupciones F10 y TIMER
+out IMR, al
+
+mov al, N_F10
+out INT0, al
+
+mov al, N_TIMER
+out INT1, al
+
+mov al, 1
+out COMP, al
+
+mov al, 0
+out CONT, al
+
+mov bx, offset NUMERO
+mov al, 1
+
+STI
+
+INT 6
+
+bucle: 
+       cmp NUMERO, 0
+       jnz bucle
+
+mov al, 1111_1111b ;deshabilito interrupciones
+out IMR, al
+
+int 0
+end

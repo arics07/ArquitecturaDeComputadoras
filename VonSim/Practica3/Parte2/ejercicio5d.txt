@@ -38,7 +38,7 @@ RUT_TIMER: push ax
 org 2000h
 CLI
 
-mov al, 1111_1101b ;habilito interrupciones F10
+mov al, 1111_1101b ;habilito interrupciones TIMER
 out IMR, al
 
 mov al, N_TIMER
